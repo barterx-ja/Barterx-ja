@@ -9,19 +9,40 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
 
-// Default route
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Serve static frontend files
+app.use(express.static(__dirname));
 
 // Database setup
 const db = new sqlite3.Database('barterx.db', (err) => {
   if (err) console.error('Database opening error:', err);
 });
 
-// Listings API
+// Automatically create tables if they don't exist
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS listings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    description TEXT,
+    owner TEXT
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_listing INTEGER,
+    to_listing INTEGER,
+    status TEXT
+  )`);
+});
+
+// Default route to serve the frontend
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// --- LISTINGS API ---
+
+// Get all listings
 app.get('/listings', (req, res) => {
   db.all('SELECT * FROM listings', [], (err, rows) => {
     if (err) return res.status(400).json({ error: err.message });
@@ -29,6 +50,7 @@ app.get('/listings', (req, res) => {
   });
 });
 
+// Add a new listing
 app.post('/listings', (req, res) => {
   const { title, description, owner } = req.body;
   db.run(
@@ -41,7 +63,9 @@ app.post('/listings', (req, res) => {
   );
 });
 
-// Trades API
+// --- TRADES API ---
+
+// Propose a trade
 app.post('/trades', (req, res) => {
   const { from_listing, to_listing } = req.body;
   db.run(
@@ -54,6 +78,7 @@ app.post('/trades', (req, res) => {
   );
 });
 
+// Update trade status (accept/reject)
 app.post('/trades/:id/status', (req, res) => {
   const { status } = req.body;
   db.run(
@@ -66,15 +91,6 @@ app.post('/trades/:id/status', (req, res) => {
   );
 });
 
-// Marketplace API – get listings excluding the current user
-app.get('/marketplace/:owner', (req, res) => {
-  const owner = req.params.owner;
-  db.all('SELECT * FROM listings WHERE owner != ?', [owner], (err, rows) => {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-// Only one PORT declaration
+// Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ BarterX server running on port ${PORT}`));
