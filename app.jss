@@ -1,4 +1,4 @@
-const api = 'http://localhost:5000'; // Change this to deployed URL on Render later
+const api = https://barterx-ja.onrender.com
 const appDiv = document.getElementById('app');
 
 let userId = null;
