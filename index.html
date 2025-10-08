@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BarterX MVP</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BarterX - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app"></div>
-<script src="app.js"></script>
+  <header>
+    <div class="header-left">
+      <h1>BarterX</h1>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="listings">
+      <h2>My Listings</h2>
+      <div id="listingContainer"></div>
+      <form id="listingForm">
+        <input type="text" id="title" placeholder="Listing title" required>
+        <input type="text" id="description" placeholder="Description" required>
+        <input type="text" id="owner" placeholder="Owner name" required>
+        <button type="submit">Add Listing</button>
+      </form>
+    </section>
+
+    <section class="trades">
+      <h2>Pending Trades</h2>
+      <div id="tradeContainer"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 BarterX. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
