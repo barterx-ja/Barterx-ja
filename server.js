@@ -4,6 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
+const path = require('path');
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -90,6 +91,13 @@ app.post('/trades/:id/status', (req, res) => {
     if(err) return res.status(400).json({ error: err.message });
     res.json({ success: true });
   });
+});
+// Serve frontend files
+app.use(express.static(path.join(__dirname)));
+
+// Default route to serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
