@@ -71,5 +71,3 @@ app.post('/trades/:id/status', (req, res) => {
 // Only one PORT declaration
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
- 
