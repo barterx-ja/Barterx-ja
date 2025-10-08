@@ -9,8 +9,6 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-
-// Serve frontend files
 app.use(express.static(__dirname));
 
 // Default route
@@ -57,7 +55,7 @@ app.post('/trades', (req, res) => {
 });
 
 app.post('/trades/:id/status', (req, res) => {
-  const { status } = req.body; // 'accepted' or 'rejected'
+  const { status } = req.body;
   db.run(
     `UPDATE trades SET status = ? WHERE id = ?`,
     [status, req.params.id],
@@ -66,6 +64,15 @@ app.post('/trades/:id/status', (req, res) => {
       res.json({ success: true });
     }
   );
+});
+
+// Marketplace API – get listings excluding the current user
+app.get('/marketplace/:owner', (req, res) => {
+  const owner = req.params.owner;
+  db.all('SELECT * FROM listings WHERE owner != ?', [owner], (err, rows) => {
+    if (err) return res.status(400).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
 // Only one PORT declaration
